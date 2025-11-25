@@ -1,6 +1,6 @@
 # GitScribe
 
-You love shipping. You hate writing about it. GitScribe turns your commit history into posts, release notes, and updates—**so you can keep building 🚀**
+You love shipping. You hate writing about it. GitScribe turns your commit history into posts, blogs, release notes, and more—**so you can keep building 🚀**
 
 ## Installation
 
