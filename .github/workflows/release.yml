@@ -39,7 +39,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Build binary with PyInstaller
-        run: pyinstaller --onefile --name gitscribe src/cli.py
+        run: pyinstaller --onefile --name gitscribe main.py
 
       - name: Rename binary for release
         shell: bash

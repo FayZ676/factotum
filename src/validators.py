@@ -1,10 +1,13 @@
 """Validation utilities for GitScribe."""
 
 from datetime import datetime
+from typing import TypeVar, Type, Optional
 import click
 
+T = TypeVar("T")
 
-def validate_value_type(value, accept_type):
+
+def validate_value_type(value: object, accept_type: Type[T]) -> Optional[T]:
     """Validates that a value is of the expected type, returning the value if valid or None if invalid."""
     if not isinstance(value, accept_type):
         click.echo("Error: Foo")

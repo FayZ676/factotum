@@ -4,33 +4,6 @@ import sys
 import subprocess
 import click
 
-from src.validators import validate_value_type, validate_date_string_format
-
-
-def build_git_log_command(last, since, until):
-    """Build git log command with optional filters."""
-    cmd = ["git", "log", "--oneline"]
-    has_date_filter = since is not None or until is not None
-
-    if since is not None and validate_date_string_format(
-        value=since, accept_format="%Y-%m-%d"
-    ):
-        cmd.extend([f"--since={since}"])
-
-    if until is not None and validate_date_string_format(
-        value=until, accept_format="%Y-%m-%d"
-    ):
-        cmd.extend([f"--until={until}"])
-
-    if (
-        not has_date_filter
-        and last is not None
-        and validate_value_type(value=last, accept_type=int)
-    ):
-        cmd.extend(["-n", str(last)])
-
-    return cmd
-
 
 def run_git_command(cmd) -> str:
     """Execute a git command and handle errors."""
@@ -50,20 +23,3 @@ def run_git_command(cmd) -> str:
             err=True,
         )
         sys.exit(1)
-    except Exception as e:
-        click.echo(f"An unexpected error occurred: {str(e)}", err=True)
-        sys.exit(1)
-
-
-def get_git_diff() -> str:
-    """Get git diff of staged changes only."""
-    return run_git_command(["git", "diff", "--cached"])
-
-
-def commit_changes(message: str) -> bool:
-    """Commit staged changes with the given message."""
-    try:
-        run_git_command(["git", "commit", "-m", message])
-        return True
-    except Exception:
-        return False

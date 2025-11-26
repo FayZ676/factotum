@@ -30,7 +30,7 @@ uninstall_hook: ## Remove git pre-push hook
 # Binary Commands
 
 build_binary: ## Build the executable binary
-	pyinstaller --onefile --name gitscribe src/cli.py
+	pyinstaller --onefile --name gitscribe main.py
 
 test_binary: ## Test the built binary
 	./dist/gitscribe post --last 1
