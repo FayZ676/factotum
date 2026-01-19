@@ -16,9 +16,15 @@ from src.config import save_config, load_config, get_api_key, CONFIG_FILE
 console = Console()
 
 
-@click.group()
+@click.group(
+    epilog=f"Configuration file: {CONFIG_FILE}\nEdit this file to customize your actions and commands."
+)
 def cli():
-    """Factotum - A multitool for your terminal that does whatever you want."""
+    """Factotum - A multitool for your terminal that does whatever you want.
+
+    Run 'fac init' to create your configuration file, then use 'fac <command>'
+    to execute preconfigured actions.
+    """
     pass
 
 
