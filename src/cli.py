@@ -18,14 +18,14 @@ console = Console()
 
 @click.group()
 def cli():
-    """GitScribe - Transform your git history into content."""
+    """Factotum - A multitool for your terminal that does whatever you want."""
     pass
 
 
 @cli.command()
 def init():
-    """Initialize GitScribe configuration."""
-    console.print("[bold cyan]Setting up GitScribe configuration...[/bold cyan]")
+    """Initialize Factotum configuration."""
+    console.print("[bold cyan]Setting up Factotum configuration...[/bold cyan]")
     api_key = click.prompt("Enter your OpenAI API key", hide_input=True)
 
     repo_config_path = Path(__file__).parent.parent / "config.json"
@@ -43,7 +43,7 @@ def init():
     console.print("\n[bold]You can now:[/bold]")
     console.print("  [cyan]1.[/cyan] Edit the config file to add custom actions")
     console.print(
-        "  [cyan]2.[/cyan] Run [yellow]'gitscribe <action-name>'[/yellow] to execute actions"
+        "  [cyan]2.[/cyan] Run [yellow]'fac <action-name>'[/yellow] to execute actions"
     )
 
 

@@ -1,34 +1,34 @@
 # Installation
 
-This guide covers installing GitScribe on macOS, Linux, and Windows, plus manual installation.
+This guide covers installing Factotum on macOS, Linux, and Windows, plus manual installation.
 
 ## macOS
 
 ```bash
-curl -L https://github.com/FayZ676/commit2content/releases/latest/download/gitscribe-macos -o /tmp/gitscribe && chmod +x /tmp/gitscribe && sudo mv /tmp/gitscribe /usr/local/bin/
+curl -L https://github.com/FayZ676/factotum/releases/latest/download/factotum-macos -o /tmp/factotum && chmod +x /tmp/factotum && sudo mv /tmp/factotum /usr/local/bin/
 ```
 
 ## Linux
 
 ```bash
-curl -L https://github.com/FayZ676/commit2content/releases/latest/download/gitscribe-linux -o /tmp/gitscribe && chmod +x /tmp/gitscribe && sudo mv /tmp/gitscribe /usr/local/bin/
+curl -L https://github.com/FayZ676/factotum/releases/latest/download/factotum-linux -o /tmp/factotum && chmod +x /tmp/factotum && sudo mv /tmp/factotum /usr/local/bin/
 ```
 
 ## Windows (PowerShell)
 
 ```powershell
-Invoke-WebRequest -Uri "https://github.com/FayZ676/commit2content/releases/latest/download/gitscribe-windows.exe" -OutFile "$env:USERPROFILE\gitscribe.exe"
+Invoke-WebRequest -Uri "https://github.com/FayZ676/factotum/releases/latest/download/factotum-windows.exe" -OutFile "$env:USERPROFILE\factotum.exe"
 # Then add to PATH or move to a directory in your PATH
 ```
 
 ## Manual Installation
 
-Download the appropriate binary for your platform from the [Releases page](https://github.com/FayZ676/commit2content/releases/latest), make it executable, and move it to a directory in your PATH.
+Download the appropriate binary for your platform from the [Releases page](https://github.com/FayZ676/factotum/releases/latest), make it executable, and move it to a directory in your PATH.
 
 ## Verify Installation
 
 ```bash
-gitscribe --help
+factotum --help
 ```
 
 If the command prints the help text, you’re good to go.
@@ -39,7 +39,7 @@ If the command prints the help text, you’re good to go.
 After installation, run the configuration command to set up your OpenAI API key and default style files:
 
 ```bash
-gitscribe configure
+fac configure
 ```
 
 See [USAGE.md](USAGE.md) for detailed configuration instructions and usage examples.
@@ -52,15 +52,15 @@ If you installed using the binary installation method:
 **macOS/Linux:**
 
 ```bash
-sudo rm /usr/local/bin/gitscribe
-rm -rf ~/.gitscribe
+sudo rm /usr/local/bin/factotum
+rm -rf ~/.factotum
 ```
 
 **Windows:**
 
 ```powershell
-Remove-Item "$env:USERPROFILE\gitscribe.exe"
-Remove-Item -Recurse -Force "$env:USERPROFILE\.gitscribe"
+Remove-Item "$env:USERPROFILE\factotum.exe"
+Remove-Item -Recurse -Force "$env:USERPROFILE\.factotum"
 # Or remove from wherever you placed it in your PATH
 ```
 
@@ -72,4 +72,4 @@ If you installed locally during development:
 make uninstall
 ```
 
-**Note:** These commands will permanently delete your stored OpenAI API key, default style file configuration, and any other GitScribe settings. You'll need to reconfigure if you reinstall GitScribe later.
+**Note:** These commands will permanently delete your stored OpenAI API key, default style file configuration, and any other factotum settings. You'll need to reconfigure if you reinstall factotum later.

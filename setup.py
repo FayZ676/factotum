@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="gitscribe",
+    name="factotum",
     version="0.5.0",
     packages=find_packages(),
     install_requires=[
@@ -13,7 +13,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "gitscribe=src.cli:main",
+            "fac=src.cli:main",
         ],
     },
     python_requires=">=3.10",

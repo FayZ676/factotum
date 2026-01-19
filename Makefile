@@ -35,19 +35,19 @@ uninstall_hook: ## Remove git pre-push hook
 # Binary Commands
 
 build_binary: ## Build the executable binary
-	pyinstaller --onefile --name gitscribe main.py
+	pyinstaller --onefile --name fac main.py
 
 test_binary: ## Test the built binary
-	./dist/gitscribe --help
-	./dist/gitscribe init --help
+	./dist/fac --help
+	./dist/fac init --help
 
 install_binary: build_binary ## Install binary to system PATH
-	sudo cp dist/gitscribe /usr/local/bin/
-	sudo chmod +x /usr/local/bin/gitscribe 	
+	sudo cp dist/fac /usr/local/bin/
+	sudo chmod +x /usr/local/bin/fac
 
 uninstall: ## Remove binary from system PATH and configuration
-	sudo rm -f /usr/local/bin/gitscribe
-	rm -rf ~/.gitscribe
+	sudo rm -f /usr/local/bin/fac
+	rm -rf ~/.factotum
 
 # Development
 

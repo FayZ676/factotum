@@ -16,14 +16,14 @@ jobs:
       matrix:
         include:
           - os: macos-latest
-            artifact_name: gitscribe
-            asset_name: gitscribe-macos
+            artifact_name: factotum
+            asset_name: factotum-macos
           - os: ubuntu-latest
-            artifact_name: gitscribe
-            asset_name: gitscribe-linux
+            artifact_name: factotum
+            asset_name: factotum-linux
           - os: windows-latest
-            artifact_name: gitscribe.exe
-            asset_name: gitscribe-windows.exe
+            artifact_name: factotum.exe
+            asset_name: factotum-windows.exe
 
     steps:
       - name: Checkout code
@@ -39,16 +39,16 @@ jobs:
           pip install -r requirements.txt
 
       - name: Build binary with PyInstaller
-        run: pyinstaller --onefile --name gitscribe main.py
+        run: pyinstaller --onefile --name factotum main.py
 
       - name: Rename binary for release
         shell: bash
         run: |
           mkdir -p release
           if [ "${{ runner.os }}" == "Windows" ]; then
-            mv dist/gitscribe.exe release/${{ matrix.asset_name }}
+            mv dist/factotum.exe release/${{ matrix.asset_name }}
           else
-            mv dist/gitscribe release/${{ matrix.asset_name }}
+            mv dist/factotum release/${{ matrix.asset_name }}
           fi
 
       - name: Upload artifact
@@ -78,9 +78,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            artifacts/gitscribe-macos/gitscribe-macos
-            artifacts/gitscribe-linux/gitscribe-linux
-            artifacts/gitscribe-windows.exe/gitscribe-windows.exe
+            artifacts/factotum-macos/factotum-macos
+            artifacts/factotum-linux/factotum-linux
+            artifacts/factotum-windows.exe/factotum-windows.exe
           draft: false
           prerelease: false
           body_path: documentation/CHANGELOG.md
