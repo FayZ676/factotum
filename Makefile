@@ -6,17 +6,22 @@ help: ## Show this help message
 
 install: ## Set up development environment
 	python -m venv .venv
-	source .venv/bin/activate && pip install -r requirements.txt
+	.venv/bin/pip install --upgrade pip
+	.venv/bin/pip install -r requirements.txt
+	.venv/bin/pip install -e .
 
 # Testing
 
-test_post: ## Test post command with last 5 commits
-	python -m src.cli post --last=5
+test_init: ## Test init command
+	python main.py init --help
 
-test_commit: ## Test commit command
-	python -m src.cli commit
+test_summarize: ## Test summarize-commits action (requires config)
+	python main.py summarize-commits --since="1 week ago"
 
-test_all: test_post test_commit ## Run all tests
+test_cli: ## Test CLI help and structure
+	python main.py --help
+
+test_all: test_cli test_init ## Run all basic tests
 
 # Hooks
 
@@ -30,16 +35,27 @@ uninstall_hook: ## Remove git pre-push hook
 # Binary Commands
 
 build_binary: ## Build the executable binary
-	pyinstaller --onefile --name gitscribe main.py
+	pyinstaller --onefile --name fac main.py
 
 test_binary: ## Test the built binary
-	./dist/gitscribe post --last 1
-	./dist/gitscribe commit
+	./dist/fac --help
+	./dist/fac init --help
 
 install_binary: build_binary ## Install binary to system PATH
-	sudo cp dist/gitscribe /usr/local/bin/
-	sudo chmod +x /usr/local/bin/gitscribe 	
+	sudo cp dist/fac /usr/local/bin/
+	sudo chmod +x /usr/local/bin/fac
 
 uninstall: ## Remove binary from system PATH and configuration
-	sudo rm -f /usr/local/bin/gitscribe
-	rm -rf ~/.gitscribe
+	sudo rm -f /usr/local/bin/fac
+	rm -rf ~/.factotum
+
+# Development
+
+clean: ## Clean build artifacts
+	rm -rf build/ dist/ *.spec
+	find . -type d -name "__pycache__" -exec rm -rf {} +
+	find . -type d -name "*.egg-info" -exec rm -rf {} +
+
+dev: install ## Setup and run in development mode
+	@echo "✅ Development environment ready!"
+	@echo "Run: source .venv/bin/activate"

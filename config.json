@@ -1,0 +1,52 @@
+{
+  "openai_api_key": "",
+  "actions": [
+    {
+      "name": "summarize-commits",
+      "description": "Look at all commit messages in some block of time and use a LLM to summarize them.",
+      "steps": [
+        {
+          "name": "git-log",
+          "description": "Log all staged changes with git",
+          "type": "shell",
+          "params": [
+            {
+              "name": "commit",
+              "description": "The commit hash to start looking at commit messages",
+              "type": "string",
+              "default": null
+            }
+          ],
+          "value": "git log {{commit}}..HEAD --pretty=oneline"
+        },
+        {
+          "name": "summarize-logs",
+          "description": "Summarize git logs using an LLM.",
+          "type": "llm",
+          "params": [],
+          "value": "Summarize the following commits:\n\n{{@git-log}}"
+        }
+      ]
+    },
+    {
+      "name": "commit-message",
+      "description": "Look at staged code changes and use a LLM to generate a clear and professional commit message.",
+      "steps": [
+        {
+          "name": "diff",
+          "description": "",
+          "type": "shell",
+          "params": [],
+          "value": "git diff --staged"
+        },
+        {
+          "name": "generate-message",
+          "description": "Generate a commit message based on unstaged code changes using an LLM.",
+          "type": "llm",
+          "params": [],
+          "value": "## Git Diff Result\n{{@diff}}\n\n## Instructions\nAbove is the `git diff` of my staged code changes. Please generate a commit message that adheres to these guidelines.\n\n## Guidelines\nFollow conventional commit format:\n- Use imperative mood (e.g., \"Add feature\" not \"Added feature\")\n- Keep the message one line in length concise (10-20 words)\n- Start with a type prefix: feat:, fix:, docs:, style:, refactor:, test:, chore:\n\nExamples:\nfeat: Add user authentication with OAuth2\nfix: Resolve memory leak in data processing\ndocs: Update API documentation for v2\nrefactor: Simplify validation logic\n\n##Response Format\nRespond only with the final commit message."
+        }
+      ]
+    }
+  ]
+}
