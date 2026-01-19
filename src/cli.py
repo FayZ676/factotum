@@ -3,10 +3,16 @@ import json
 import click
 from pathlib import Path
 
+from rich.panel import Panel
+from rich.console import Console
+
 from src.llm import OpenAILLM
 from src.models import Action
 from src.executor import execute_action
 from src.config import save_config, load_config, get_api_key, CONFIG_FILE
+
+
+console = Console()
 
 
 @click.group()
@@ -18,12 +24,12 @@ def cli():
 @cli.command()
 def init():
     """Initialize GitScribe configuration."""
-    click.echo("Setting up GitScribe configuration...")
+    console.print("[bold cyan]Setting up GitScribe configuration...[/bold cyan]")
     api_key = click.prompt("Enter your OpenAI API key", hide_input=True)
 
     repo_config_path = Path(__file__).parent.parent / "config.json"
     if not repo_config_path.exists():
-        click.echo(f"❌ Template config not found at {repo_config_path}", err=True)
+        console.print(f"[red]❌ Template config not found at {repo_config_path}[/red]")
         sys.exit(1)
 
     with open(repo_config_path, "r") as f:
@@ -32,10 +38,12 @@ def init():
     config["openai_api_key"] = api_key
 
     save_config(config)
-    click.echo(f"✅ Configuration saved to {CONFIG_FILE}")
-    click.echo("\nYou can now:")
-    click.echo("  1. Edit the config file to add custom actions")
-    click.echo("  2. Run 'gitscribe <action-name>' to execute actions")
+    console.print(f"[green]✅ Configuration saved to {CONFIG_FILE}[/green]")
+    console.print("\n[bold]You can now:[/bold]")
+    console.print("  [cyan]1.[/cyan] Edit the config file to add custom actions")
+    console.print(
+        "  [cyan]2.[/cyan] Run [yellow]'gitscribe <action-name>'[/yellow] to execute actions"
+    )
 
 
 def create_dynamic_cli():
@@ -54,10 +62,22 @@ def create_dynamic_cli():
             @click.command(name=action.name, help=action.description)
             def dynamic_command(**kwargs):
                 try:
-                    result = execute_action(action, kwargs, OpenAILLM(get_api_key()))
-                    click.echo(result)
+                    with console.status(
+                        f"[bold cyan]Executing {action.name}...", spinner="dots"
+                    ):
+                        result = execute_action(
+                            action, kwargs, OpenAILLM(get_api_key())
+                        )
+                    console.print(result)
                 except Exception as e:
-                    click.echo(f"❌ Error: {e}", err=True)
+                    console.print(
+                        Panel(
+                            f"[red]{str(e)}[/red]",
+                            title="❌ Error",
+                            border_style="red",
+                            padding=(1, 2),
+                        )
+                    )
                     sys.exit(1)
 
             seen_params = {}
