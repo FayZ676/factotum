@@ -8,7 +8,7 @@ from rich.panel import Panel
 from rich.console import Console
 
 from src.llm import OpenAILLM
-from src.models import Action
+from src.models import Action, Config
 from src.executor import execute_action
 from src.config import save_config, load_config, get_api_key, CONFIG_FILE
 
@@ -34,16 +34,24 @@ def init():
         sys.exit(1)
 
     with open(repo_config_path, "r") as f:
-        config = json.load(f)
+        config_data = json.load(f)
 
-    config["openai_api_key"] = api_key
+    config = Config.model_validate(config_data)
+    config = config.model_copy(update={"openai_api_key": api_key})
 
     save_config(config)
-    console.print(f"[green]✅ Configuration saved to {CONFIG_FILE}[/green]")
-    console.print("\n[bold]You can now:[/bold]")
-    console.print("  [cyan]1.[/cyan] Edit the config file to add custom actions")
+    console.print(f"\n[green]✅ Configuration saved to {CONFIG_FILE}[/green]")
+    console.print("\n[bold]Preconfigured commands available:[/bold]")
+    for action in config.actions:
+        console.print(f"  [cyan]•[/cyan] [yellow]fac {action.name}[/yellow]")
+        console.print(f"    {action.description}")
+
+    console.print("\n[bold]Next steps:[/bold]")
     console.print(
-        "  [cyan]2.[/cyan] Run [yellow]'fac <action-name>'[/yellow] to execute actions"
+        f"  [cyan]•[/cyan] Edit [yellow]{CONFIG_FILE}[/yellow] to add custom actions"
+    )
+    console.print(
+        f"  [cyan]•[/cyan] Run [yellow]'fac --help'[/yellow] to see all available commands"
     )
 
 

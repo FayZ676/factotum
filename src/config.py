@@ -27,11 +27,11 @@ def get_api_key() -> str:
     return config.openai_api_key
 
 
-def save_config(config: dict):
+def save_config(config: Config):
     """Save configuration to file."""
     _ensure_config_dir()
     with open(CONFIG_FILE, "w") as f:
-        json.dump(config, f, indent=2)
+        f.write(config.model_dump_json(indent=2))
 
 
 ### private ###
