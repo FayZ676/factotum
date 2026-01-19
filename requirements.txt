@@ -2,3 +2,4 @@ click==8.3.0
 openai==2.2.0
 pyinstaller==6.16.0
 pyperclip==1.9.0
+rich==14.2.0

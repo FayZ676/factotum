@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 
 import click
+import pyperclip
 from rich.panel import Panel
 from rich.console import Console
 
@@ -68,7 +69,9 @@ def create_dynamic_cli():
                         result = execute_action(
                             action, kwargs, OpenAILLM(get_api_key())
                         )
-                    console.print(result)
+                    pyperclip.copy(result)
+                    console.print(f"[bold]{result}[/bold]")
+                    console.print("[dim]✓ Copied to clipboard[/dim]")
                 except Exception as e:
                     console.print(
                         Panel(

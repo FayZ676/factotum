@@ -9,6 +9,7 @@ setup(
         "openai==2.2.0",
         "pyperclip==1.9.0",
         "pydantic==2.10.6",
+        "rich==14.2.0",
     ],
     entry_points={
         "console_scripts": [
