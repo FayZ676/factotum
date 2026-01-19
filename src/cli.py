@@ -54,7 +54,6 @@ def create_dynamic_cli():
             def dynamic_command(**kwargs):
                 try:
                     result = execute_action(cmd, kwargs, get_api_key())
-                    click.echo("\n" + "=" * 60)
                     click.echo(result)
                 except Exception as e:
                     click.echo(f"❌ Error: {e}", err=True)
