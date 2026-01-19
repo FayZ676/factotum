@@ -1,8 +1,8 @@
 import sys
 import json
-import click
 from pathlib import Path
 
+import click
 from rich.panel import Panel
 from rich.console import Console
 
