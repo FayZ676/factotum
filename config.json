@@ -1,0 +1,23 @@
+{
+  "openai_api_key": "",
+  "actions": [
+    {
+      "name": "summarize-commits",
+      "params": [
+        {
+          "name": "since",
+          "type": "string",
+          "default": "1 week ago",
+          "description": "How far back to summarize commits"
+        }
+      ],
+      "commands": [
+        {
+          "name": "git-log",
+          "value": "git log --since=\"{{since}}\" --pretty=oneline"
+        }
+      ],
+      "prompt": "Summarize the following commits:\n\n{{git-log}}"
+    }
+  ]
+}
