@@ -18,12 +18,12 @@ class Param(BaseModel):
 
 class Command(BaseModel):
     name: str
+    params: list[Param]
     value: str
 
 
 class Action(BaseModel):
     name: str
-    params: list[Param]
     commands: list[Command]
     prompt: str | None
 

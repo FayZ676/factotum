@@ -3,21 +3,32 @@
   "actions": [
     {
       "name": "summarize-commits",
-      "params": [
-        {
-          "name": "since",
-          "type": "string",
-          "default": "1 week ago",
-          "description": "How far back to summarize commits"
-        }
-      ],
       "commands": [
         {
           "name": "git-log",
+          "params": [
+            {
+              "name": "since",
+              "type": "string",
+              "default": "1 week ago",
+              "description": "How far back to summarize commits"
+            }
+          ],
           "value": "git log --since=\"{{since}}\" --pretty=oneline"
         }
       ],
       "prompt": "Summarize the following commits:\n\n{{git-log}}"
+    },
+    {
+      "name": "commit-message",
+      "commands": [
+        {
+          "name": "diff",
+          "params": [],
+          "value": "git diff --staged"
+        }
+      ],
+      "prompt": "## Git Diff Result\n{{diff}}\n\n## Instructions\nAbove is the `git diff` of my staged code changes. Please generate a commit message that adheres to these guidelines.\n\n## Guidelines\nFollow conventional commit format:\n- Use imperative mood (e.g., \"Add feature\" not \"Added feature\")\n- Keep the message one line in length concise (10-20 words)\n- Start with a type prefix: feat:, fix:, docs:, style:, refactor:, test:, chore:\n\nExamples:\nfeat: Add user authentication with OAuth2\nfix: Resolve memory leak in data processing\ndocs: Update API documentation for v2\nrefactor: Simplify validation logic\n\n##Response Format\nRespond only with the final commit message."
     }
   ]
 }

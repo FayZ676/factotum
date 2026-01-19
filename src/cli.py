@@ -3,6 +3,7 @@ import json
 import click
 from pathlib import Path
 
+from src.models import Action
 from src.executor import execute_action
 from src.config import save_config, get_actions, get_config_path, get_api_key
 
@@ -48,18 +49,27 @@ def create_dynamic_cli():
 
     for action in actions:
 
-        # TODO: Add type for cmd
-        def make_command(cmd):
-            @click.command(name=cmd.name, help=cmd.prompt or f"Run {cmd.name} action")
+        def make_command(action: Action):
+            @click.command(
+                name=action.name, help=action.prompt or f"Run {action.name} action"
+            )
             def dynamic_command(**kwargs):
                 try:
-                    result = execute_action(cmd, kwargs, get_api_key())
+                    result = execute_action(action, kwargs, get_api_key())
                     click.echo(result)
                 except Exception as e:
                     click.echo(f"❌ Error: {e}", err=True)
                     sys.exit(1)
 
-            for param in cmd.params:
+            # Collect all unique parameters across all commands
+            seen_params = {}
+            for cmd in action.commands:
+                for param in cmd.params:
+                    if param.name not in seen_params:
+                        seen_params[param.name] = param
+
+            # Add CLI options for all unique parameters
+            for param in seen_params.values():
                 dynamic_command = click.option(
                     f"--{param.name}",
                     default=param.default,
