@@ -3,9 +3,10 @@ import json
 import click
 from pathlib import Path
 
+from src.llm import OpenAILLM
 from src.models import Action
 from src.executor import execute_action
-from src.config import save_config, get_actions, get_config_path, get_api_key
+from src.config import save_config, load_config, get_api_key, CONFIG_FILE
 
 
 @click.group()
@@ -31,7 +32,7 @@ def init():
     config["openai_api_key"] = api_key
 
     save_config(config)
-    click.echo(f"✅ Configuration saved to {get_config_path()}")
+    click.echo(f"✅ Configuration saved to {CONFIG_FILE}")
     click.echo("\nYou can now:")
     click.echo("  1. Edit the config file to add custom actions")
     click.echo("  2. Run 'gitscribe <action-name>' to execute actions")
@@ -43,32 +44,28 @@ def create_dynamic_cli():
     This is called at runtime to build the command structure.
     """
     try:
-        actions = get_actions()
+        actions = load_config().actions
     except (FileNotFoundError, ValueError):
         return cli
 
     for action in actions:
 
         def make_command(action: Action):
-            @click.command(
-                name=action.name, help=action.prompt or f"Run {action.name} action"
-            )
+            @click.command(name=action.name, help=action.description)
             def dynamic_command(**kwargs):
                 try:
-                    result = execute_action(action, kwargs, get_api_key())
+                    result = execute_action(action, kwargs, OpenAILLM(get_api_key()))
                     click.echo(result)
                 except Exception as e:
                     click.echo(f"❌ Error: {e}", err=True)
                     sys.exit(1)
 
-            # Collect all unique parameters across all commands
             seen_params = {}
-            for cmd in action.commands:
-                for param in cmd.params:
+            for step in action.steps:
+                for param in step.params:
                     if param.name not in seen_params:
                         seen_params[param.name] = param
 
-            # Add CLI options for all unique parameters
             for param in seen_params.values():
                 dynamic_command = click.option(
                     f"--{param.name}",

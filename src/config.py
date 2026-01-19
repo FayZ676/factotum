@@ -1,59 +1,32 @@
 import json
 from pathlib import Path
 
-from src.models import Action, Command, Param
+from src.models import Config
 
 
 CONFIG_DIR = Path.home() / ".gitscribe"
 CONFIG_FILE = CONFIG_DIR / "config.json"
 
 
-def get_config_path() -> Path:
-    """Get the path to the config file."""
-    return CONFIG_FILE
-
-
-def load_config() -> dict:
+def load_config() -> Config:
     """Load configuration from ~/.gitscribe/config.json"""
     if not CONFIG_FILE.exists():
         raise FileNotFoundError(
-            f"Config file not found at {CONFIG_FILE}. "
-            f"Please run 'gitscribe init' to create it."
+            f"Config file not found at {CONFIG_FILE}. " f"Please run 'gitscribe init'."
         )
 
     with open(CONFIG_FILE, "r") as f:
-        return json.load(f)
+        return Config.model_validate_json(f.read())
 
 
 def get_api_key() -> str:
     """Get OpenAI API key from config."""
     config = load_config()
-    api_key = config.get("openai_api_key")
-    if not api_key:
+    if not config.openai_api_key:
         raise ValueError(
             "OpenAI API key not found in config. Please run 'gitscribe init'."
         )
-    return api_key
-
-
-def get_actions() -> list[Action]:
-    """Get all actions from config as Command objects."""
-    config = load_config()
-    actions = config.get("actions", [])
-
-    commands = []
-    for action in actions:
-        commands_list = [Command(**cmd) for cmd in action.get("commands", [])]
-        commands.append(
-            Action(
-                name=action["name"],
-                params=[Param(**param) for param in action.get("params", [])],
-                commands=commands_list,
-                prompt=action.get("prompt"),
-            )
-        )
-
-    return commands
+    return config.openai_api_key
 
 
 def save_config(config: dict):

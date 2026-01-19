@@ -1,11 +1,16 @@
+from typing import Literal
+
 from pydantic import BaseModel
 
 
-class Param(BaseModel):
+class Base(BaseModel):
     name: str
+    description: str
+
+
+class Param(Base):
     type: str
     default: str | None
-    description: str | None
 
     def resolve_value(self, provided_value: str | None) -> str | None:
         if provided_value is not None:
@@ -16,16 +21,14 @@ class Param(BaseModel):
         return self.default is None
 
 
-class Command(BaseModel):
-    name: str
+class Step(Base):
+    type: Literal["shell", "llm"]
     params: list[Param]
     value: str
 
 
-class Action(BaseModel):
-    name: str
-    commands: list[Command]
-    prompt: str | None
+class Action(Base):
+    steps: list[Step]
 
 
 class Config(BaseModel):

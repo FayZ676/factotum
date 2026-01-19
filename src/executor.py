@@ -1,37 +1,35 @@
 import subprocess
 
 from src.llm import OpenAILLM
-from src.models import Action, Command
+from src.models import Action, Step
 
 
-def execute_action(
-    action: Action, provided_values: dict[str, str | None], api_key: str
-) -> str:
-    # TODO: Prompt is optional, this shouldn't matter.
-    if not action.prompt:
-        raise ValueError(f"Action '{action.name}' has no prompt defined")
+def execute_action(action: Action, args: dict[str, str | None], llm: OpenAILLM) -> str:
+    step_outputs = {}
+    validated_params = _validate_and_collect_params(action.steps, args)
+    for step in action.steps:
+        resolved_value = _fill_template(step.value, {**validated_params}, step_outputs)
+        if step.type == "shell":
+            output = _execute_shell(resolved_value)
+            step_outputs[step.name] = output
+        elif step.type == "llm":
+            output = llm.generate(resolved_value)
+            if output is None:
+                raise ValueError(f"LLM returned empty response for step '{step.name}'")
+            step_outputs[step.name] = output
+        else:
+            raise ValueError(f"Unknown step type: {step.type}")
 
-    validated_params = _validate_and_collect_params(action.commands, provided_values)
-    command_outputs = {}
-    for cmd in action.commands:
-        cmd_params = {param.name: validated_params[param.name] for param in cmd.params}
-        command_output = _execute_command(_fill_template(cmd.value, cmd_params))
-        command_outputs[cmd.name] = command_output
+    if not action.steps:
+        raise ValueError(f"Action '{action.name}' has no steps defined")
 
-    response = OpenAILLM(api_key).generate(
-        _fill_template(action.prompt, command_outputs)
-    )
-
-    if response is None:
-        raise ValueError("LLM returned empty response")
-
-    return response
+    return step_outputs[action.steps[-1].name]
 
 
 ### private ###
 
 
-def _execute_command(command_str: str, cwd: str = ".") -> str:
+def _execute_shell(command_str: str, cwd: str = ".") -> str:
     result = subprocess.run(
         command_str, shell=True, cwd=cwd, capture_output=True, text=True, check=False
     )
@@ -42,21 +40,33 @@ def _execute_command(command_str: str, cwd: str = ".") -> str:
     return result.stdout
 
 
-def _fill_template(template: str, params: dict[str, str]) -> str:
+def _fill_template(
+    template: str, params: dict[str, str], step_outputs: dict[str, str]
+) -> str:
+    """
+    Fill template with both params and step outputs.
+    - {{param_name}} for parameters
+    - {{@step-name}} for previous step outputs
+    """
     result = template
+
+    for step_name, output in step_outputs.items():
+        result = result.replace(f"{{{{@{step_name}}}}}", output)
+
     for key, value in params.items():
         result = result.replace(f"{{{{{key}}}}}", value)
+
     return result
 
 
 def _validate_and_collect_params(
-    commands: list[Command], provided_values: dict[str, str | None]
+    steps: list[Step], provided_values: dict[str, str | None]
 ) -> dict[str, str]:
     all_params = {}
     missing_params = []
 
-    for cmd in commands:
-        for param in cmd.params:
+    for step in steps:
+        for param in step.params:
             if param.name not in all_params:
                 all_params[param.name] = param
 
