@@ -6,9 +6,13 @@
 
 ## Demo
 
-Here's a demo of using the preconfigured `commit-message` command to automatically generate a commit message for your staged code changes.
+1. Using the preconfigured `commit-message` action to automatically generate a commit message for staged staged code changes.
 
 https://github.com/user-attachments/assets/b918a8e5-d857-4c33-9891-d6e186e329b8
+
+2. Using the preconfigured `commit-summary` action to generate a twitter post about past commits.
+
+https://github.com/user-attachments/assets/873b649e-fb89-45c2-950c-96437d244405
 
 ## Quick Start
 
