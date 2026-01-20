@@ -4,6 +4,10 @@
 > 
 > _A person who does all kinds of work._
 
+## Demo
+
+Here's a demo of using the preconfigured `commit-message` command to automatically generate a commit message for your staged code changes.
+
 https://github.com/user-attachments/assets/b918a8e5-d857-4c33-9891-d6e186e329b8
 
 ## Quick Start
