@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - YYYY-MM-DD
+
+### Added
+
+- Config-driven dynamic CLI with init command, action executor, and console entrypoint.
+- Step-based actions supporting shell and LLM steps, with templateable step output references.
+- Command-level parameters with aggregated CLI options.
+- New commit-message action.
+- Rich-powered console features: colored output, status spinner, improved error panels, and enhanced output styling.
+- Ability to copy CLI results to the clipboard.
+- Pydantic-based Config model and improved init experience with action listing.
+
+### Changed
+
+- Project rebranded to Factotum; updated CLI naming, config paths, build scripts, release workflow, and documentation.
+- README overhauled with installation and usage guidance.
+- CLI help enhanced with epilog showing config path and init usage instructions.
+- Imports reordered to follow PEP 8 grouping.
+
+### Removed
+
+- Legacy commands removed in favor of the new config-driven CLI.
+- Extra/obsolete documentation removed.
+
+### Fixed
+
+- Removed extraneous plus sign formatting.
+
 ## [v0.4.0] - 2025-10-18
 
 ### Added
