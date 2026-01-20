@@ -2,12 +2,12 @@
   "openai_api_key": "",
   "actions": [
     {
-      "name": "summarize-commits",
+      "name": "commit-summary",
       "description": "Look at all commit messages in some block of time and use a LLM to summarize them.",
       "steps": [
         {
           "name": "git-log",
-          "description": "Log all staged changes with git",
+          "description": "Log all commit message (one line) since some given commit.",
           "type": "shell",
           "params": [
             {
@@ -23,8 +23,15 @@
           "name": "summarize-logs",
           "description": "Summarize git logs using an LLM.",
           "type": "llm",
-          "params": [],
-          "value": "Summarize the following commits:\n\n{{@git-log}}"
+          "params": [
+            {
+              "name": "guidelines",
+              "description": "Summary guidelines describing the desired format of the summary.",
+              "type": "string",
+              "default": null
+            }
+          ],
+          "value": "## Git Log Results\n{{@git-log}}\n\n## Instructions\n\nSummarize the above commit messages according to the following guidelines.\n\n## Guidelines\n{{guidelines}}"
         }
       ]
     },
