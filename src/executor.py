@@ -1,14 +1,31 @@
 import subprocess
 
+from rich.panel import Panel
+from rich.prompt import Confirm
+from rich.console import Console
+
 from src.llm import OpenAILLM
 from src.models import Action, Step
 
 
-def execute_action(action: Action, args: dict[str, str | None], llm: OpenAILLM) -> str:
+def execute_action(
+    action: Action,
+    args: dict[str, str | None],
+    llm: OpenAILLM,
+    console: Console,
+    status=None,
+) -> str | None:
     step_outputs = {}
     validated_params = _validate_and_collect_params(action.steps, args)
+
     for step in action.steps:
         resolved_value = _fill_template(step.value, {**validated_params}, step_outputs)
+
+        if step.confirm:
+            if not _prompt_step_confirmation(step, console, status):
+                continue
+
+        # TODO: Switch case?
         if step.type == "shell":
             output = _execute_shell(resolved_value)
             step_outputs[step.name] = output
@@ -23,10 +40,32 @@ def execute_action(action: Action, args: dict[str, str | None], llm: OpenAILLM) 
     if not action.steps:
         raise ValueError(f"Action '{action.name}' has no steps defined")
 
-    return step_outputs[action.steps[-1].name]
+    for step in reversed(action.steps):
+        if step.name in step_outputs:
+            return step_outputs[step.name]
+
+    return None
 
 
 ### private ###
+
+
+def _prompt_step_confirmation(step: Step, console: Console, status=None) -> bool:
+    if status:
+        status.stop()
+
+    console.print(
+        f"\n[bold cyan]Step:[/bold cyan] [bold]{step.name}[/bold]: {step.description}"
+    )
+    confirmed = Confirm.ask("[bold]Execute this step?[/bold]", default=True)
+
+    if not confirmed:
+        console.print(f"[dim]⊗ Skipped '{step.name}'[/dim]")
+
+    if status:
+        status.start()
+
+    return confirmed
 
 
 def _execute_shell(command_str: str, cwd: str = ".") -> str:
@@ -43,11 +82,6 @@ def _execute_shell(command_str: str, cwd: str = ".") -> str:
 def _fill_template(
     template: str, params: dict[str, str], step_outputs: dict[str, str]
 ) -> str:
-    """
-    Fill template with both params and step outputs.
-    - {{param_name}} for parameters
-    - {{@step-name}} for previous step outputs
-    """
     result = template
 
     for step_name, output in step_outputs.items():

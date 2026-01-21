@@ -36,12 +36,12 @@
       ]
     },
     {
-      "name": "commit-message",
+      "name": "commit-changes",
       "description": "Generate a commit message for staged changes and commit.",
       "steps": [
         {
           "name": "diff",
-          "description": "",
+          "description": "Git diff all staged changes",
           "type": "shell",
           "params": [],
           "value": "git diff --staged"
@@ -58,7 +58,8 @@
           "description": "Commit changes with a provided commit message.",
           "type": "shell",
           "params": [],
-          "value": "git commit -m \"{{@generate-message}}\""
+          "value": "git commit -m \"{{@generate-message}}\"",
+          "confirm": true
         }
       ]
     }

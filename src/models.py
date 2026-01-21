@@ -25,6 +25,7 @@ class Step(Base):
     type: Literal["shell", "llm"]
     params: list[Param]
     value: str
+    confirm: bool = False
 
 
 class Action(Base):
