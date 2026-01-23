@@ -10,7 +10,7 @@ DEFAULT_CONFIG = Config(
     actions=[
         Action(
             name="commit-summary",
-            description="Look at all commit messages in some block of time and use a LLM to summarize them.",
+            description="Look at all commit messages after a given commit and use a LLM to summarize them.",
             steps=[
                 Step(
                     name="git-log",
@@ -44,7 +44,7 @@ DEFAULT_CONFIG = Config(
         ),
         Action(
             name="commit-changes",
-            description="Generate a commit message for staged changes and commit.",
+            description="Generate a conventional commit message for staged changes.",
             steps=[
                 Step(
                     name="diff",

@@ -43,8 +43,9 @@ def init():
     console.print("\n[bold]Preconfigured commands available:[/bold]")
 
     for action in config.actions:
-        console.print(f"  [cyan]•[/cyan] [yellow]fac {action.name}[/yellow]")
-        console.print(f"    {action.description}")
+        console.print(
+            f"  [cyan]•[/cyan] [yellow]fac {action.name}:[/yellow] {action.description}"
+        )
 
     console.print("\n[bold]Next steps:[/bold]")
     console.print(
