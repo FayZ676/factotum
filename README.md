@@ -64,11 +64,6 @@ Remove-Item -Recurse -Force "$env:USERPROFILE\.config\factotum"
 
 ## Usage
 
-### Pre-configured Commands
-
-1. `commit-summary`: Look at all commit messages in some block of time and use a LLM to summarize them.
-2. `commit-message`: Look at staged code changes and use a LLM to generate a clear and professional commit message.
-
 ### Creating Custom Actions
 
 Edit `~/.factotum/config.json` to add your own actions. Each action can have multiple steps that either run shell commands or call the LLM.
@@ -102,21 +97,3 @@ Example structure:
 **Parameter syntax:**
 - `{{param_name}}`: Inject command-line parameters
 - `{{@step-name}}`: Inject output from previous steps
-
-## Configuration
-
-Configuration file location: `~/.config/factotum/config.json`
-
-Required fields:
-- `openai_api_key`: Your OpenAI API key
-- `actions`: Array of action definitions
-
-See [config.json](config.json) for the full template.
-
-## License
-
-MIT License - See LICENSE file for details
-
-## Contributing
-
-Contributions welcome! Please feel free to submit a Pull Request.
