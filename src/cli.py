@@ -1,6 +1,4 @@
 import sys
-import json
-from pathlib import Path
 
 import click
 import pyperclip
@@ -8,9 +6,15 @@ from rich.panel import Panel
 from rich.console import Console
 
 from src.llm import OpenAILLM
-from src.models import Action, Config
+from src.models import Action
 from src.executor import execute_action
-from src.config import save_config, load_config, get_api_key, CONFIG_FILE
+from src.config import (
+    save_config,
+    load_config,
+    get_api_key,
+    CONFIG_FILE,
+    DEFAULT_CONFIG,
+)
 
 
 console = Console()
@@ -33,21 +37,11 @@ def init():
     """Initialize Factotum configuration."""
     console.print("[bold cyan]Setting up Factotum configuration...[/bold cyan]")
     api_key = click.prompt("Enter your OpenAI API key", hide_input=True)
-
-    repo_config_path = Path(__file__).parent.parent / "config.json"
-    if not repo_config_path.exists():
-        console.print(f"[red]❌ Template config not found at {repo_config_path}[/red]")
-        sys.exit(1)
-
-    with open(repo_config_path, "r") as f:
-        config_data = json.load(f)
-
-    config = Config.model_validate(config_data)
-    config = config.model_copy(update={"openai_api_key": api_key})
-
+    config = DEFAULT_CONFIG.model_copy(update={"openai_api_key": api_key})
     save_config(config)
     console.print(f"\n[green]✅ Configuration saved to {CONFIG_FILE}[/green]")
     console.print("\n[bold]Preconfigured commands available:[/bold]")
+
     for action in config.actions:
         console.print(f"  [cyan]•[/cyan] [yellow]fac {action.name}[/yellow]")
         console.print(f"    {action.description}")
