@@ -34,6 +34,21 @@ Invoke-WebRequest -Uri "https://github.com/FayZ676/factotum/releases/latest/down
 # Add to PATH or move to a directory in your PATH
 ```
 
+### Uninstall
+
+**macOS/Linux:**
+```bash
+sudo rm /usr/local/bin/fac
+rm -rf ~/.config/factotum
+```
+
+**Windows (PowerShell):**
+```powershell
+Remove-Item "$env:USERPROFILE\fac.exe"
+Remove-Item -Recurse -Force "$env:USERPROFILE\.config\factotum"
+# If you added it to a directory in your PATH, remove it from there instead
+```
+
 ### Initial Setup
 
 1. Initialize configuration with your OpenAI API key:

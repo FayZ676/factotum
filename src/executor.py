@@ -9,11 +9,7 @@ from src.models import Action, Step
 
 
 def execute_action(
-    action: Action,
-    args: dict[str, str | None],
-    llm: OpenAILLM,
-    console: Console,
-    status=None,
+    action: Action, args: dict[str, str | None], llm: OpenAILLM, console: Console
 ) -> str | None:
     if not action.steps:
         raise ValueError(f"Action '{action.name}' has no steps defined")
@@ -34,16 +30,17 @@ def execute_action(
             skipped_steps.add(step.name)
             continue
 
-        if step.confirm and not _prompt_step_confirmation(step, console, status):
+        if step.confirm and not _prompt_step_confirmation(step, console, status=None):
             skipped_steps.add(step.name)
             continue
 
-        resolved_value = _fill_template(step.value, validated_params, step_outputs)
-        try:
-            step_outputs[step.name] = _execute_step(step, resolved_value, llm)
-        except Exception as e:
-            console.print(f"[red]✗ Step '{step.name}' failed: {e}[/red]")
-            raise
+        with console.status(f"[bold cyan]{step.description}...", spinner="dots"):
+            resolved_value = _fill_template(step.value, validated_params, step_outputs)
+            try:
+                step_outputs[step.name] = _execute_step(step, resolved_value, llm)
+            except Exception as e:
+                console.print(f"[red]✗ Step '{step.name}' failed: {e}[/red]")
+                raise
 
     for step in reversed(action.steps):
         if step.name in step_outputs:

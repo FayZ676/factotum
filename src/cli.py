@@ -71,23 +71,15 @@ def create_dynamic_cli():
         def make_command(action: Action):
             @click.command(name=action.name, help=action.description)
             def dynamic_command(**kwargs):
-                # TODO: Would be cool if this told you what step it was executing.
-                status = console.status(
-                    f"[bold cyan]Executing {action.name}...", spinner="dots"
-                )
                 try:
-                    status.start()
                     result = execute_action(
-                        action, kwargs, OpenAILLM(get_api_key()), console, status
+                        action, kwargs, OpenAILLM(get_api_key()), console
                     )
-                    status.stop()
                     if result is not None:
                         pyperclip.copy(result)
                         console.print(f"[bold]{result}[/bold]")
                         console.print("[dim]✓ Copied to clipboard[/dim]")
                 except Exception as e:
-                    if "status" in locals():
-                        status.stop()
                     console.print(
                         Panel(
                             f"[red]{str(e)}[/red]",
