@@ -1,6 +1,6 @@
+import re
 import subprocess
 
-from rich.panel import Panel
 from rich.prompt import Confirm
 from rich.console import Console
 
@@ -15,39 +15,61 @@ def execute_action(
     console: Console,
     status=None,
 ) -> str | None:
+    if not action.steps:
+        raise ValueError(f"Action '{action.name}' has no steps defined")
+
     step_outputs = {}
+    skipped_steps = set()
     validated_params = _validate_and_collect_params(action.steps, args)
 
     for step in action.steps:
-        resolved_value = _fill_template(step.value, {**validated_params}, step_outputs)
+        dependencies = _extract_step_dependencies(step.value)
+        blocked_by = dependencies & skipped_steps
 
-        if step.confirm:
-            if not _prompt_step_confirmation(step, console, status):
-                continue
+        if blocked_by:
+            console.print(
+                f"[dim]⊗ Skipping '{step.name}' (depends on skipped: "
+                f"{', '.join(blocked_by)})[/dim]"
+            )
+            skipped_steps.add(step.name)
+            continue
 
-        # TODO: Switch case?
-        if step.type == "shell":
-            output = _execute_shell(resolved_value)
-            step_outputs[step.name] = output
-        elif step.type == "llm":
-            output = llm.generate(resolved_value)
-            if output is None:
-                raise ValueError(f"LLM returned empty response for step '{step.name}'")
-            step_outputs[step.name] = output
-        else:
-            raise ValueError(f"Unknown step type: {step.type}")
+        if step.confirm and not _prompt_step_confirmation(step, console, status):
+            skipped_steps.add(step.name)
+            continue
 
-    if not action.steps:
-        raise ValueError(f"Action '{action.name}' has no steps defined")
+        resolved_value = _fill_template(step.value, validated_params, step_outputs)
+        try:
+            step_outputs[step.name] = _execute_step(step, resolved_value, llm)
+        except Exception as e:
+            console.print(f"[red]✗ Step '{step.name}' failed: {e}[/red]")
+            raise
 
     for step in reversed(action.steps):
         if step.name in step_outputs:
             return step_outputs[step.name]
-
     return None
 
 
 ### private ###
+
+
+def _execute_step(step: Step, resolved_value: str, llm: OpenAILLM) -> str:
+    match step.type:
+        case "shell":
+            return _execute_shell(resolved_value)
+        case "llm":
+            output = llm.generate(resolved_value)
+            if output is None:
+                raise ValueError(f"LLM returned empty response for step '{step.name}'")
+            return output
+        case _:
+            raise ValueError(f"Unknown step type: {step.type}")
+
+
+def _extract_step_dependencies(template: str) -> set[str]:
+    """Extract step names that this template depends on ({{@step_name}})."""
+    return set(re.findall(r"\{\{@(\w+)\}\}", template))
 
 
 def _prompt_step_confirmation(step: Step, console: Console, status=None) -> bool:

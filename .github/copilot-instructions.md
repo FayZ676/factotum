@@ -23,3 +23,18 @@ When given a problem to solve (a new feature, a bug, etc) always go through the 
 
 - KISS: Keep it simple, stupid
 - DRY: Don't Repeat Yourself
+- Prefer proven primitives over bespoke code: use existing project architecture and standard library patterns first.
+- Avoid common anti-patterns that create hidden bugs or complexity (e.g., reinventing utilities, overly broad exception handling, unnecessary shared mutable state).
+
+### Implementation preferences (Python)
+
+When proposing or adding code, prioritize clarity with minimal code:
+
+- Prefer existing patterns in the codebase and standard library solutions before inventing new abstractions.
+- Write “Pythonic” code: small focused functions, clear naming, and simple control flow over cleverness.
+- Use a functional style when it reduces state and repetition (e.g., transform data with expressions instead of multi-step mutation). Do not force FP if it makes the code harder to read.
+- Avoid re-implementing common utilities. If Python already provides it, use it.
+
+### Additional Info
+
+- **Python Version:** 3.12

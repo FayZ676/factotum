@@ -57,7 +57,7 @@ def init():
         f"  [cyan]•[/cyan] Edit [yellow]{CONFIG_FILE}[/yellow] to add custom actions"
     )
     console.print(
-        f"  [cyan]•[/cyan] Run [yellow]'fac --help'[/yellow] to see all available commands"
+        "  [cyan]•[/cyan] Run [yellow]'fac --help'[/yellow] to see all available commands"
     )
 
 
